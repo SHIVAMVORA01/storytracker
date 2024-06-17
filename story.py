@@ -26,10 +26,6 @@ def save_data(data, file_path):
 file_path = 'Story Tracker.xlsx'
 data = load_data(file_path)
 
-
-# Title of the Streamlit app
-st.title('My User Story Tracker')
-
 # Create tabs
 tab1, tab2, tab3 = st.tabs(["Current Data", "Add/Edit User Story", "Gantt Chart"])
 
