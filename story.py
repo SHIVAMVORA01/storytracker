@@ -96,7 +96,8 @@ with tab3:
     st.markdown(f"**Total Efforts**: {total_efforts}")
     st.markdown(f"**Total User Stories**: {total_user_stories}")
     st.markdown(f"**Total Tasks**: {total_tasks}")
-    st.markdown(f"**Done Tasks**: {done_tasks}")
+    st.markdown(f"**Done Tasks**: {done_tasks}")  
     st.markdown(f"**On-Time Tasks**: {on_time_tasks}")
     st.markdown(f"**Delayed Tasks**: {delayed_tasks}")
     st.markdown(f"**OTD %**: {otd_percentage:.2f}%")
+
