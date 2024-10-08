@@ -1,6 +1,5 @@
 import streamlit as st
 import pandas as pd
-import altair as alt
 from datetime import datetime
 
 # Set page layout to wide
@@ -27,7 +26,7 @@ file_path = 'Story Tracker.xlsx'
 data = load_data(file_path)
 
 # Create tabs
-tab1, tab2, tab3 = st.tabs(["Current Data", "Add/Edit User Story", "Gantt Chart"])
+tab1, tab2, tab3 = st.tabs(["Current Data", "Add/Edit User Story", "OTD"])
 
 # Tab 1: Display the data and make it editable
 with tab1:
@@ -71,48 +70,33 @@ with tab2:
             save_data(data, file_path)
             st.success('User Story added/edited successfully!')
 
-# Tab 3: Create Gantt chart with filters
+# Tab 3: OTD (On-Time Delivery) statistics
 with tab3:
-    st.subheader('Gantt Chart')
+    st.subheader('OTD')
 
     # Filter by Sprint
     sprint_filter = st.selectbox('Select Sprint', options=list(data['Sprint'].unique()))
     filtered_data = data[data['Sprint'] == sprint_filter]
 
-    # Display sprint start and end dates once
-    sprint_dates = filtered_data[['Sprint Start', 'Sprint End']].drop_duplicates().reset_index(drop=True)
-    for idx, row in sprint_dates.iterrows():
-        st.markdown(f"### Sprint Start: {row['Sprint Start'].strftime('%d-%m-%Y')} | Sprint End: {row['Sprint End'].strftime('%d-%m-%Y')}")
+    # Calculate statistics
+    total_efforts = filtered_data['Efforts'].sum()
+    total_user_stories = filtered_data['User Story'].nunique()
+    total_tasks = len(filtered_data)
+    done_tasks = len(filtered_data[filtered_data['Status'] == 'Done'])
+    on_time_tasks = len(filtered_data[(filtered_data['Status'] == 'Done') & (filtered_data['Spillover'] == 'No')])
+    delayed_tasks = len(filtered_data[filtered_data['Spillover'] == 'Yes'])
 
-    # Create Gantt chart using Altair
-    base = alt.Chart(filtered_data).encode(
-        x=alt.X('Start Date:T', title='Start Date'),
-        x2=alt.X2('End Date:T'),
-        y=alt.Y('User Story:N', title='User Story'),
-        color=alt.Color('Status:N', legend=alt.Legend(title="Status")),
-        tooltip=['User Story', 'Start Date', 'End Date', 'Status']
-    ).properties(
-        width=800,
-        height=400,
-        title='User Stories Timeline'
-    )
+    if total_tasks > 0:
+        otd_percentage = (done_tasks / total_tasks) * 100
+    else:
+        otd_percentage = 0
 
-    gantt_chart = base.mark_bar().encode(
-        y=alt.Y('User Story:N', sort=alt.EncodingSortField(field='Start Date', order='ascending'))
-    )
-
-    sprint_rects = alt.Chart(filtered_data).mark_rect(
-        opacity=0.3,
-        color='lightblue'
-    ).encode(
-        x=alt.X('Sprint Start:T', title='Sprint Start'),
-        x2=alt.X2('Sprint End:T'),
-        y=alt.Y('Sprint:N', title='Sprint')
-    ).properties(
-        width=800,
-        height=400
-    )
-
-    combined_chart = sprint_rects + gantt_chart
-
-    st.altair_chart(combined_chart, use_container_width=True)
+    # Display statistics
+    st.markdown(f"### Sprint: {sprint_filter}")
+    st.markdown(f"**Total Efforts**: {total_efforts}")
+    st.markdown(f"**Total User Stories**: {total_user_stories}")
+    st.markdown(f"**Total Tasks**: {total_tasks}")
+    st.markdown(f"**Done Tasks**: {done_tasks}")
+    st.markdown(f"**On-Time Tasks**: {on_time_tasks}")
+    st.markdown(f"**Delayed Tasks**: {delayed_tasks}")
+    st.markdown(f"**OTD %**: {otd_percentage:.2f}%")
