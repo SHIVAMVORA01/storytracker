@@ -18,8 +18,18 @@ def load_data(file_path):
     data['Status'] = data['Status'].str.strip()
     data['SpillOver'] = data['SpillOver'].str.strip()
 
-    # Calculate Spillover
-    data['SpillOver'] = data.apply(lambda row: 'Yes' if datetime.strptime(row['End Date'], '%d-%m-%Y') > datetime.strptime(row['Sprint End'], '%d-%m-%Y') else 'No', axis=1)
+    # Calculate Spillover: only if both dates are valid strings
+    def calculate_spillover(row):
+        if pd.notnull(row['End Date']) and pd.notnull(row['Sprint End']):
+            try:
+                end_date = datetime.strptime(row['End Date'], '%d-%m-%Y')
+                sprint_end = datetime.strptime(row['Sprint End'], '%d-%m-%Y')
+                return 'Yes' if end_date > sprint_end else 'No'
+            except ValueError:
+                return 'No'  # In case of invalid date formats
+        return 'No'  # Default for missing dates
+    
+    data['SpillOver'] = data.apply(calculate_spillover, axis=1)
 
     # Handle the case where 'Comments' may not exist
     data['Comments'] = data.get('Comments', '')
@@ -94,8 +104,8 @@ with tab2:
     st.subheader('OTD')
 
     # Filter by Sprint
-    sprint_filter = st.selectbox('Select Sprint', options=list(data['Sprint'].unique()))
-    filtered_data = data[data['Sprint'] == sprint_filter]
+    sprint_filter = st.selectbox('Select Sprint', options=list(data['Team Sprint'].unique()))
+    filtered_data = data[data['Team Sprint'] == sprint_filter]
 
     # Display the filtered data for debugging purposes
     st.write("Filtered Data", filtered_data)
