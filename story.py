@@ -36,7 +36,7 @@ def save_data(data, file_path):
     data.to_excel(file_path, index=False)
 
 # Load the data
-file_path = '/mnt/data/Story Tracker.xlsx'
+file_path = 'Story Tracker.xlsx'
 data = load_data(file_path)
 
 # Create tabs
