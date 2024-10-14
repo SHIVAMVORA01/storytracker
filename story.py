@@ -109,7 +109,7 @@ with tab2:
     on_time_tasks_all = len(data[(data['Status'] == 'Done') & (data['SpillOver'] == 'No')])
 
     if total_tasks_all > 0:
-        avg_otd_percentage = (on_time_tasks_all / total_tasks_all) * 100
+        avg_otd_percentage = (done_tasks_all / total_tasks_all) * 100
     else:
         avg_otd_percentage = 0
 
@@ -137,7 +137,7 @@ with tab2:
     delayed_tasks = len(filtered_data[filtered_data['SpillOver'] == 'Yes'])
 
     if total_tasks > 0:
-        otd_percentage = (done_tasks - delayed_tasks / total_tasks) * 100
+        otd_percentage = (on_time_tasks / total_tasks) * 100
     else:
         otd_percentage = 0
 
