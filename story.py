@@ -117,8 +117,8 @@ with tab2:
     st.markdown(f"### Average OTD % till now: {avg_otd_percentage:.2f}%")
 
     # Filter by Sprint
-    sprint_filter = st.selectbox('Select Sprint', options=list(data['Sprint'].unique()))
-    filtered_data = data[data['Sprint'] == sprint_filter]
+    sprint_filter = st.selectbox('Select Sprint', options=list(data['Team Sprint'].unique()))
+    filtered_data = data[data['Team Sprint'] == sprint_filter]
 
     # Display the filtered data for debugging purposes
     st.write("Filtered Data", filtered_data)
