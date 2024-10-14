@@ -137,7 +137,7 @@ with tab2:
     delayed_tasks = len(filtered_data[filtered_data['SpillOver'] == 'Yes'])
 
     if total_tasks > 0:
-        otd_percentage = (done_tasks / total_tasks) * 100
+        otd_percentage = (done_tasks - delayed_tasks / total_tasks) * 100
     else:
         otd_percentage = 0
 
