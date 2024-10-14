@@ -103,14 +103,27 @@ with tab1:
 with tab2:
     st.subheader('OTD')
 
+    # Calculate overall OTD statistics (before filtering by sprint)
+    total_tasks_all = len(data)
+    done_tasks_all = len(data[data['Status'] == 'Done'])
+    on_time_tasks_all = len(data[(data['Status'] == 'Done') & (data['SpillOver'] == 'No')])
+
+    if total_tasks_all > 0:
+        avg_otd_percentage = (on_time_tasks_all / total_tasks_all) * 100
+    else:
+        avg_otd_percentage = 0
+
+    # Display the average OTD percentage above the sprint selection
+    st.markdown(f"### Average OTD % till now: {avg_otd_percentage:.2f}%")
+
     # Filter by Sprint
-    sprint_filter = st.selectbox('Select Sprint', options=list(data['Team Sprint'].unique()))
-    filtered_data = data[data['Team Sprint'] == sprint_filter]
+    sprint_filter = st.selectbox('Select Sprint', options=list(data['Sprint'].unique()))
+    filtered_data = data[data['Sprint'] == sprint_filter]
 
     # Display the filtered data for debugging purposes
     st.write("Filtered Data", filtered_data)
 
-    # Calculate statistics
+    # Calculate statistics for the filtered sprint
     total_efforts = filtered_data['Effort'].sum()
     total_user_stories = filtered_data['Name'].nunique()
     total_tasks = len(filtered_data)
@@ -128,7 +141,7 @@ with tab2:
     else:
         otd_percentage = 0
 
-    # Display statistics
+    # Display statistics for the selected sprint
     st.markdown(f"### Sprint: {sprint_filter}")
     st.markdown(f"**Total Efforts**: {total_efforts}")
     st.markdown(f"**Total User Stories**: {total_user_stories}")
